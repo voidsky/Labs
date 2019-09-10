@@ -23,8 +23,6 @@ namespace Scheduler.Repositories
             tasks.Add(new ScheduledTask { Id = 7, Active = true, Name = "Task 6", CommantToExecute = "c:\\some command.exe", StartDateTime = DateTime.Now });
             tasks.Add(new ScheduledTask { Id = 8, Active = true, Name = "Task 7", CommantToExecute = "c:\\some command.exe", StartDateTime = DateTime.Now });
             tasks.Add(new ScheduledTask { Id = 9, Active = true, Name = "Task 8", CommantToExecute = "c:\\some command.exe", StartDateTime = DateTime.Now });
-
-
         }
 
         public void AddScheduledTask(ScheduledTask task)
