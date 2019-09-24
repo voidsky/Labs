@@ -37,11 +37,11 @@ namespace Scheduler
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            /*services.AddDbContext<SchedulerContext>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("SchedulerContext")));*/
+            services.AddDbContext<SchedulerContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("SchedulerContext")));
 
-            //services.AddScoped<ISchedulerRepository, SchedulerRepository>();
-            services.AddSingleton<ISchedulerRepository, SchedulerRepository>();
+            services.AddScoped<ISchedulerRepository, SchedulerRepository>();
+            //services.AddSingleton<ISchedulerRepository, SchedulerRepository>();
 
         }
 

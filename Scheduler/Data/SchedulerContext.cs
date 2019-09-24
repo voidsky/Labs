@@ -13,6 +13,6 @@ namespace Scheduler.Models
         {
         }
 
-        public DbSet<Scheduler.Models.ScheduledTask> ScheduledTask { get; set; }
+        public DbSet<Scheduler.Models.ScheduledTask> ScheduledTasks { get; set; }
     }
 }
