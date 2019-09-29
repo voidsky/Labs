@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Scheduler", "Scheduler\Sche
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SchedulerTests", "Test\SchedulerTests.csproj", "{844A281B-41B0-4399-A852-115BF4AF8EAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynchronizedSum", "SynchronizedSum\SynchronizedSum.csproj", "{1E9A5F8E-9ABE-457C-A7AC-9F535DEED351}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{844A281B-41B0-4399-A852-115BF4AF8EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{844A281B-41B0-4399-A852-115BF4AF8EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{844A281B-41B0-4399-A852-115BF4AF8EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E9A5F8E-9ABE-457C-A7AC-9F535DEED351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E9A5F8E-9ABE-457C-A7AC-9F535DEED351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E9A5F8E-9ABE-457C-A7AC-9F535DEED351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E9A5F8E-9ABE-457C-A7AC-9F535DEED351}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
