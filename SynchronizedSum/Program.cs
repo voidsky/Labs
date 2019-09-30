@@ -12,11 +12,10 @@ namespace SynchronizedSum
         const int totalItemsToSum = 100_000_001;
         const int splitSize = 100_000;
 
-        static int[] items = Enumerable.Range(0, totalItemsToSum).ToArray();
+        static int[] items1 = Enumerable.Range(0, totalItemsToSum).ToArray();
         static int[] items2 = Enumerable.Range(0, totalItemsToSum).ToArray();
         static int[] itemsSum = new int[totalItemsToSum];
 
-        //!!!
         static long sharedSum = 0;
 
         static object sharedSumLock = new object();
@@ -25,7 +24,7 @@ namespace SynchronizedSum
         {
             for (int i = 0; i < totalItemsToSum; i++)
             {
-                itemsSum[i] = items[i] + items2[i];
+                itemsSum[i] = items1[i] + items2[i];
                 sharedSum += itemsSum[i];
             }
         }
@@ -34,7 +33,7 @@ namespace SynchronizedSum
             for (int i = fromIndex; i < toIndex; i++)
             {
                 // gijos nesikerta ir pasidalina pasyva
-                itemsSum[i] = items[i] + items2[i];
+                itemsSum[i] = items1[i] + items2[i];
                 // taciau sharedSum sumuojasi nekorektiskai nes gijos nesinchrinzuoja
                 // skaitymo/rasimo
                 sharedSum += itemsSum[i];
@@ -44,11 +43,11 @@ namespace SynchronizedSum
         {
             for (int i = fromIndex; i < toIndex; i++)
             {
-                itemsSum[i] = items[i] + items2[i];
                 // kiekviena kart sumuojant naudojam lock`a,
                 // klaidos nebera, taciau labai neefektyvu
                 lock (sharedSumLock)
                 {
+                    itemsSum[i] = items1[i] + items2[i];
                     sharedSum += itemsSum[i];
                 }
             }
@@ -59,7 +58,7 @@ namespace SynchronizedSum
 
             for (int i = fromIndex; i < toIndex; i++)
             {
-                itemsSum[i] = items[i] + items2[i];
+                itemsSum[i] = items1[i] + items2[i];
                 localSum += itemsSum[i];
             }
             // sumavima atliekame lokaliai i lokalu kintamaji,
@@ -75,7 +74,7 @@ namespace SynchronizedSum
 
             for (int i = fromIndex; i < toIndex; i++)
             {
-                itemsSum[i] = items[i] + items2[i];
+                itemsSum[i] = items1[i] + items2[i];
                 localSum += itemsSum[i];
             }
             // Viskas tas pats kaip ir su liocked tik naudojama Interlocked
@@ -91,13 +90,13 @@ namespace SynchronizedSum
             List<Task> tasks = new List<Task>();
             int rangeStart = 0, rangeEnd = rangeStart + splitSize;
 
-            while (rangeStart <= items.Length - 1)
+            while (rangeStart <= items1.Length - 1)
             {
                 int rs = rangeStart, re = rangeEnd;
                 tasks.Add(Task.Run(() => someAction(rs, re)));
                 rangeStart = rangeEnd;
                 rangeEnd = rangeStart + splitSize;
-                if (rangeEnd >= items.Length) rangeEnd = items.Length;
+                if (rangeEnd >= items1.Length) rangeEnd = items1.Length;
             }
             Task.WaitAll(tasks.ToArray());
         }
@@ -107,31 +106,30 @@ namespace SynchronizedSum
             Action<int, int> sumMethodToUse;
             Stopwatch sw;
 
-
             Console.WriteLine($"Sumuojame viena gija...");
             sw = Stopwatch.StartNew();
             SingleThreadedSum();
             Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
 
-            Console.WriteLine($"Sumuojame naudojant {(items.Length) / splitSize} gijų, nesinchronizuotai.");
+            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, nesinchronizuotai.");
             sumMethodToUse = RangeSum;
             sw = Stopwatch.StartNew();
             LaunchSummingThreads(sumMethodToUse);
             Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
 
-            Console.WriteLine($"Sumuojame naudojant {(items.Length) / splitSize} gijų, sinchronizuotai su Lock`u.");
+            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su Lock`u.");
             sumMethodToUse = RangeSumLocked;
             sw = Stopwatch.StartNew();
             LaunchSummingThreads(sumMethodToUse);
             Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
 
-            Console.WriteLine($"Sumuojame naudojant {(items.Length) / splitSize} gijų, sinchronizuotai su GUDRESNIU Lock`u.");
+            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su GUDRESNIU Lock`u.");
             sumMethodToUse = RangeSumLockedClever;
             sw = Stopwatch.StartNew();
             LaunchSummingThreads(sumMethodToUse);
             Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
 
-            Console.WriteLine($"Sumuojame naudojant {(items.Length) / splitSize} gijų, sinchronizuotai su Interlocked klase.");
+            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su Interlocked klase.");
             sumMethodToUse = RangeSumInterlockedAdd;
             sw = Stopwatch.StartNew();
             LaunchSummingThreads(sumMethodToUse);
