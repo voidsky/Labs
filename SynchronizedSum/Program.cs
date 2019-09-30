@@ -22,6 +22,9 @@ namespace SynchronizedSum
 
         static void SingleThreadedSum()
         {
+            sharedSum = 0;
+            itemsSum = new int[totalItemsToSum];
+
             for (int i = 0; i < totalItemsToSum; i++)
             {
                 itemsSum[i] = items1[i] + items2[i];
@@ -106,35 +109,38 @@ namespace SynchronizedSum
             Action<int, int> sumMethodToUse;
             Stopwatch sw;
 
-            Console.WriteLine($"Sumuojame viena gija...");
-            sw = Stopwatch.StartNew();
-            SingleThreadedSum();
-            Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
+            for (int i = 0; i < 4; i++)
+            {
+                Console.WriteLine($"Bandymas {i}");
+                Console.Write($"Sum 1 gija...");
+                sw = Stopwatch.StartNew();
+                SingleThreadedSum();
+                Console.WriteLine($" rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms");
 
-            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, nesinchronizuotai.");
-            sumMethodToUse = RangeSum;
-            sw = Stopwatch.StartNew();
-            LaunchSummingThreads(sumMethodToUse);
-            Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
+                Console.Write($"Sum {(items1.Length) / splitSize} gijų, nesinchronizuotai..");
+                sumMethodToUse = RangeSum;
+                sw = Stopwatch.StartNew();
+                LaunchSummingThreads(sumMethodToUse);
+                Console.WriteLine($" rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms");
 
-            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su Lock`u.");
-            sumMethodToUse = RangeSumLocked;
-            sw = Stopwatch.StartNew();
-            LaunchSummingThreads(sumMethodToUse);
-            Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
+                Console.Write($"Sum {(items1.Length) / splitSize} gijų, sinchronizuotai su Lock`u...");
+                sumMethodToUse = RangeSumLocked;
+                sw = Stopwatch.StartNew();
+                LaunchSummingThreads(sumMethodToUse);
+                Console.WriteLine($" rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms");
 
-            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su GUDRESNIU Lock`u.");
-            sumMethodToUse = RangeSumLockedClever;
-            sw = Stopwatch.StartNew();
-            LaunchSummingThreads(sumMethodToUse);
-            Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
+                Console.Write($"Sum {(items1.Length) / splitSize} gijų, sinchronizuotai su GUDRESNIU Lock`u...");
+                sumMethodToUse = RangeSumLockedClever;
+                sw = Stopwatch.StartNew();
+                LaunchSummingThreads(sumMethodToUse);
+                Console.WriteLine($"rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms");
 
-            Console.WriteLine($"Sumuojame naudojant {(items1.Length) / splitSize} gijų, sinchronizuotai su Interlocked klase.");
-            sumMethodToUse = RangeSumInterlockedAdd;
-            sw = Stopwatch.StartNew();
-            LaunchSummingThreads(sumMethodToUse);
-            Console.WriteLine($"Rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms\n");
-
+                Console.Write($"Sum {(items1.Length) / splitSize} gijų, sinchronizuotai su Interlocked klase.");
+                sumMethodToUse = RangeSumInterlockedAdd;
+                sw = Stopwatch.StartNew();
+                LaunchSummingThreads(sumMethodToUse);
+                Console.WriteLine($" rezultatas {sharedSum}, užtruko {sw.ElapsedMilliseconds}ms");
+            }
             Console.ReadLine();
         }
     }
