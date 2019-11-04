@@ -3,6 +3,7 @@
 #include <time.h>       
 #include <chrono> 
 #include <iterator> 
+#include <omp.h>
 
 using namespace std::chrono;
 
@@ -22,44 +23,78 @@ void swap(int *p1, int *p2) {
 
 void BubbleSort(int *arr, int n)
 {
-	for (int i = 0; i < n-1; i++)
+	int swapCount = 1;
+
+	while (swapCount > 0)
 	{
-			for (int j = 0; j < n-1-i; j++)
-				if (arr[j]>arr[j+1])
-					swap(&arr[j + 1], &arr[j]);
+		swapCount = 0;
+
+		// even phase - every even indexed element is compared with next odd indexed element
+		for (int j = 0; j < n-1; j+=2)
+			if (arr[j] > arr[j + 1]) {
+				swap(&arr[j], &arr[j + 1]);
+				swapCount++;
+			}
+
+		// odd phase - every odd indexed element is compared with next even indexed element
+		for (int j = 1; j < n-1; j+=2)
+			if (arr[j] > arr[j+1]) {
+				swap(&arr[j], &arr[j + 1]);
+				swapCount++;
+			}
 	}
 }
+
+/*void BubbleSortParallel(int *arr, int n)
+{
+	int swapCount = 1;
+
+		while (swapCount > 0)
+		{
+			#pragma omp parallel shared(arr)
+			{
+				swapCount = 0;
+
+				// even phase - every even indexed element is compared with next odd indexed element
+				#pragma omp for reduction(+: swapCount)
+				for (int j = 0; j < n - 1; j += 2)
+					if (arr[j] > arr[j + 1]) {
+						swap(&arr[j], &arr[j + 1]);
+						swapCount++;
+					}
+
+				// odd phase - every odd indexed element is compared with next even indexed element
+				#pragma omp for reduction(+: swapCount) 
+				for (int j = 1; j < n - 1; j += 2)
+					if (arr[j] > arr[j + 1]) {
+						swap(&arr[j], &arr[j + 1]);
+						swapCount++;
+					}
+			}
+		}
+}*/
 
 void BubbleSortParallel(int *arr, int n)
 {
-	for (int i = 0; i < n-1; i++)
+	int swapCount = 1;
+	while(swapCount>0)
 	{
-		#pragma omp parallel for shared(arr,i)
-		for (int j = 0; j < n - 1 - i; j++)
-			if (arr[j] > arr[j + 1])
-				#pragma omp critical
-				swap(&arr[j + 1], &arr[j]);
-	}
-}
-
-
-/*void BubbleSort(int *arr, int n)
-{
-	for (int i = 0; i < n; i++)
-	{
-		if (i % 2 == 0) {
-			for (int j = 2; j < n; j += 2)
-				if (arr[j - 1] > arr[j])
-					swap(&arr[j - 1], &arr[j]);
-		} else {
-			for (int j = 1; j < n; j += 2)
-				if (arr[j - 1] > arr[j])
-					swap(&arr[j - 1], &arr[j]);
+		swapCount = 0;
+		#pragma omp parallel num_threads(2,4) shared(arr)   
+		{
+			int num = omp_get_thread_num();
+			#pragma omp parallel for reduction(+: swapCount) shared(arr) 
+			for (int j = num; j < n - 1; j += 2)
+				if (arr[j] > arr[j + 1]) {
+					swap(&arr[j], &arr[j + 1]);
+					swapCount++;
+				}
 		}
 	}
 }
 
-void BubbleSortParallel(int *arr, int n)
+
+/*void BubbleSortParallel(int *arr, int n)
 {
 	for (int i = 0; i < n; i++)
 	{
@@ -85,8 +120,9 @@ bool DoTest() {
 
 	srand(time(NULL));
 	for (int i = 0; i < testSize; i++) {
-		testArray1[i] = rand() % 255;
-		testArray2[i] = testArray1[i];
+		int r = rand() % 255;
+		testArray1[i] = r;
+		testArray2[i] = r;
 	}
 	PrintArray(testArray1, testSize);
 	cout << "Serial sort of " << testSize << " size " << endl;
@@ -127,6 +163,7 @@ int main(int argc, char *argv[])
 
 	if (doTest) {
 		DoTest();
+		//return(0);
 	}
 
 	for (int size = 1000; size <= 100000; size += 5000) {
