@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LongestCommonSubsequenceTes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BubbleSort", "BubbleSort\BubbleSort.vcxproj", "{B3F41606-156F-433C-9E29-EDB0CBED54E9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LongestCommonSubstring", "LongestCommonSubstring\LongestCommonSubstring.vcxproj", "{AF601FA1-4A9D-4768-8488-23ABCAE4A339}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,16 @@ Global
 		{B3F41606-156F-433C-9E29-EDB0CBED54E9}.Release|x64.Build.0 = Release|x64
 		{B3F41606-156F-433C-9E29-EDB0CBED54E9}.Release|x86.ActiveCfg = Release|Win32
 		{B3F41606-156F-433C-9E29-EDB0CBED54E9}.Release|x86.Build.0 = Release|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Debug|x64.ActiveCfg = Debug|x64
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Debug|x64.Build.0 = Debug|x64
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Debug|x86.ActiveCfg = Debug|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Debug|x86.Build.0 = Debug|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Release|Any CPU.ActiveCfg = Release|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Release|x64.ActiveCfg = Release|x64
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Release|x64.Build.0 = Release|x64
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Release|x86.ActiveCfg = Release|Win32
+		{AF601FA1-4A9D-4768-8488-23ABCAE4A339}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
