@@ -65,12 +65,13 @@ void BubbleSortParallel(int *arr, int n, int num_threads = 8, bool detailedOutpu
 {
 	int swapEvenCount = 1;
 	int swapOddCount = 1;
+	
+	omp_set_num_threads(num_threads);
 
 	while (swapEvenCount > 0 || swapOddCount > 0)
 	{
 		swapEvenCount = swapOddCount = 0;
-
-		omp_set_num_threads(num_threads);
+		
 		#pragma omp parallel for reduction(+: swapEvenCount)  
 		for (int j = 0; j < n-1-n%2; j += 2)
 			if (arr[j] > arr[j + 1]) {
@@ -83,7 +84,6 @@ void BubbleSortParallel(int *arr, int n, int num_threads = 8, bool detailedOutpu
 			cout << "Swapped even(0) " << swapEvenCount << endl;
 		}
 
-		omp_set_num_threads(num_threads);
 		#pragma omp parallel for reduction(+: swapOddCount) 
 		for (int j = 1; j < n-1-(1-n%2); j += 2)
 			if (arr[j] > arr[j + 1]) {
@@ -113,12 +113,14 @@ bool DoTest(int testSize, bool detailedOutput) {
 		testArray2[i] = r;
 		testArray3[i] = r;
 	}
-	PrintArray(testArray1, testSize); cout << endl;
 
 	BubbleSort1(testArray1, testSize);
 	BubbleSort2(testArray2, testSize);
 
-	BubbleSortParallel(testArray3, testSize, detailedOutput);
+	PrintArray(testArray1, testSize);
+	cout << endl;
+
+	BubbleSortParallel(testArray3, testSize, omp_get_num_threads(), detailedOutput);
 
 	if (detailedOutput) {
 		PrintArray(testArray3, testSize); 
@@ -143,6 +145,9 @@ bool DoTest(int testSize, bool detailedOutput) {
 
 /* Do benchmark using provided number of threads */
 void DoBenchamrk(int numThreads) {
+
+	cout << "DataSize;NumThreads;SimpleSort;OddEvenSort;ParallelSort" << endl;
+
 	for (int size = 1000; size <= 100000; size += 5000) {
 
 		int * array1 = new int[size];
@@ -171,7 +176,7 @@ void DoBenchamrk(int numThreads) {
 		auto stop3 = high_resolution_clock::now();
 		auto durationParallel = duration_cast<milliseconds>(stop3 - start3);
 
-		cout << size << ";" << numThreads << ";" <<
+		cout << size << ";" << numThreads << 
 			";" << durationSerial.count() <<
 			";" << durationSerial2.count() <<
 			";" << durationParallel.count() << endl;
@@ -183,7 +188,6 @@ void DoBenchamrk(int numThreads) {
 
 int main(int argc, char *argv[])
 {
-
 	if (argc < 2) {
 		cout << "Naudojimas:" << endl;
 		cout << "BUBBLESORT test [size] [detailed_output] - perform sorting test, check if it sorts correctly." << endl;
@@ -192,7 +196,7 @@ int main(int argc, char *argv[])
 	} else {
 		if (string(argv[1]) == "test") {
 			int size = stoi(argv[2]);
-			bool detailed = argv[3] == "true";
+			bool detailed = true; // string(argv[3]) == "true";
 			DoTest(size,detailed);
 			return (0);
 		}
