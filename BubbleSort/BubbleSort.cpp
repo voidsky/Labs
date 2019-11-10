@@ -5,6 +5,7 @@
 #include <iterator> 
 #include <omp.h>
 #include <string> 
+#include <iomanip>
 
 using namespace std::chrono;
 using namespace std;
@@ -146,7 +147,7 @@ bool DoTest(int testSize, bool detailedOutput) {
 /* Do benchmark using provided number of threads */
 void DoBenchamrk(int numThreads) {
 
-	cout << "DataSize;NumThreads;SimpleSort;OddEvenSort;ParallelSort" << endl;
+	cout << "DataSize;NumThreads;SimpleSort;OddEvenSort;ParallelSort;Speedup" << endl;
 
 	for (int size = 1000; size <= 100000; size += 5000) {
 
@@ -179,7 +180,8 @@ void DoBenchamrk(int numThreads) {
 		cout << size << ";" << numThreads << 
 			";" << durationSerial.count() <<
 			";" << durationSerial2.count() <<
-			";" << durationParallel.count() << endl;
+			";" << durationParallel.count() << 
+			";" << to_string((float)durationSerial.count() / (float)durationParallel.count()) << endl;
 
 		delete array1;
 		delete array2;
