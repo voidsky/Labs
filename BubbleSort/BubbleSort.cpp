@@ -21,7 +21,22 @@ void swap(int *p1, int *p2) {
 	*p2 = p;
 }
 
-void BubbleSort(int *arr, int n)
+void BubbleSort1(int *arr, int n)
+{
+	int swapCount = 1;
+	while (swapCount > 0)
+	{
+		swapCount = 0;
+		// even phase - every even indexed element is compared with next odd indexed element
+		for (int j = 0; j < n - 1; j++)
+			if (arr[j] > arr[j + 1]) {
+				swap(&arr[j], &arr[j + 1]);
+				swapCount++;
+			}
+	}
+}
+
+void BubbleSort2(int *arr, int n)
 {
 	int swapCount = 1;
 
@@ -80,10 +95,10 @@ void BubbleSortParallel(int *arr, int n)
 	while(swapCount>0)
 	{
 		swapCount = 0;
-		#pragma omp parallel num_threads(2,4) shared(arr)   
+		#pragma omp parallel num_threads(2,100) 
 		{
 			int num = omp_get_thread_num();
-			#pragma omp parallel for reduction(+: swapCount) shared(arr) 
+			#pragma omp parallel for reduction(+: swapCount) num_threads(100)  
 			for (int j = num; j < n - 1; j += 2)
 				if (arr[j] > arr[j + 1]) {
 					swap(&arr[j], &arr[j + 1]);
@@ -92,7 +107,6 @@ void BubbleSortParallel(int *arr, int n)
 		}
 	}
 }
-
 
 /*void BubbleSortParallel(int *arr, int n)
 {
@@ -117,20 +131,25 @@ bool DoTest() {
 	cout << "Performing sorting test of " << testSize << " size " << endl;
 	int * testArray1 = new int[testSize];
 	int * testArray2 = new int[testSize];
+	int * testArray3 = new int[testSize];
 
 	srand(time(NULL));
 	for (int i = 0; i < testSize; i++) {
 		int r = rand() % 255;
 		testArray1[i] = r;
 		testArray2[i] = r;
+		testArray3[i] = r;
 	}
 	PrintArray(testArray1, testSize);
 	cout << "Serial sort of " << testSize << " size " << endl;
-	BubbleSort(testArray1, testSize);
+	BubbleSort1(testArray1, testSize);
 	PrintArray(testArray1, testSize);
-	cout << "Parallel sort of " << testSize << " size " << endl;
-	BubbleSortParallel(testArray2, testSize);
+	cout << "Odd even sort of " << testSize << " size " << endl;
+	BubbleSort1(testArray2, testSize);
 	PrintArray(testArray2, testSize);
+	cout << "Parallel sort of " << testSize << " size " << endl;
+	BubbleSortParallel(testArray3, testSize);
+	PrintArray(testArray3, testSize);
 	bool testPass = true;
 	for (int i = 0; i < testSize; i++) {
 		if (testArray1[i] != testArray2[i]) {
@@ -170,24 +189,34 @@ int main(int argc, char *argv[])
 
 		int * array1 = new int[size];
 		int * array2 = new int[size];
+		int * array3 = new int[size];
 
 		srand(time(NULL));
 		for (int i = 0; i < size; i++) {
 			array1[i] = rand() % 255;
 			array2[i] = array1[i];
+			array3[i] = array1[i];
 		}
 
 		auto start = high_resolution_clock::now();
-		BubbleSort(array1, size);
+		BubbleSort1(array1, size);
 		auto stop = high_resolution_clock::now();
 		auto durationSerial = duration_cast<milliseconds>(stop - start);
+
+		auto start2 = high_resolution_clock::now();
+		BubbleSort2(array2, size);
+		auto stop2 = high_resolution_clock::now();
+		auto durationSerial2 = duration_cast<milliseconds>(stop2 - start2);
+
+		auto start3 = high_resolution_clock::now();
+		BubbleSortParallel(array3, size);
+		auto stop3 = high_resolution_clock::now();
+		auto durationParallel = duration_cast<milliseconds>(stop3 - start3);
 		
-		start = high_resolution_clock::now();
-		BubbleSortParallel(array2, size);
-		stop = high_resolution_clock::now();
-		auto durationParallel = duration_cast<milliseconds>(stop - start);
-		
-		cout << size << ";" << durationSerial.count() << ";" << durationParallel.count() << endl;
+		cout << size << 
+			";" << durationSerial.count() << 
+			";" << durationSerial2.count() <<
+			";" << durationParallel.count() << endl;
 
 		delete array1;
 		delete array2;
