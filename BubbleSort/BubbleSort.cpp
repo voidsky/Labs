@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 	} else {
 		if (string(argv[1]) == "test") {
 			int size = stoi(argv[2]);
-			bool detailed = true; // string(argv[3]) == "true";
+			bool detailed = string(argv[3]) == "true";
 			DoTest(size,detailed);
 			return (0);
 		}
