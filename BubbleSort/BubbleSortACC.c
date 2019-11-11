@@ -24,29 +24,31 @@ void BubbleSortParallel(int *arr, int n)
 	int swapEvenCount = 1;
 	int swapOddCount = 1;
 	
-	#pragma acc data copy(arr[0:n])  
+	#pragma acc data copy(arr[0:n])
 	while (swapEvenCount > 0 || swapOddCount > 0)
 	{
 		swapEvenCount = swapOddCount = 0;
 		
-		#pragma acc kernels loop reduction(+:swapEvenCount) 
+		#pragma acc parallel 					
+		{
+			#pragma acc loop reduction(+:swapEvenCount)
 			for (int j = 0; j < n - 1 - n % 2; j += 2)
-				if (*(arr+j) > *(arr + j + 1)) {
-					int tmp = *(arr + j);
-					*(arr + j) = *(arr + j + 1);
-					*(arr + j + 1) = tmp;
+				if (arr[j] > arr[j + 1]) {
+					int tmp = arr[j];
+					arr[j] = arr[j + 1];
+					arr[j + 1] = tmp;
 					swapEvenCount++;
 				}
-		
-		#pragma acc kernels loop reduction(+:swapOddCount) 
+
+			#pragma acc loop reduction(+:swapOddCount)
 			for (int j = 1; j < n - 1 - (1 - n % 2); j += 2)
 				if (arr[j] > arr[j + 1]) {
-					int tmp = *(arr + j);
-					*(arr + j) = *(arr + j + 1);
-					*(arr + j + 1) = tmp;
+					int tmp = arr[j];
+					arr[j] = arr[j + 1];
+					arr[j + 1] = tmp;
 					swapOddCount++;
 				}
-
+		}
 	}
 }
 
@@ -70,9 +72,11 @@ int main(int argc, char *argv[])
 
 	printf("Start sorting\n");
 
+	clock_t begin = clock();
 	BubbleSortParallel(array1, size);
+	clock_t end = clock();
 
-	printf("Finished \n");
+	printf("Finished in %f\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
 	if (silent == 0) PrintArray(array1, size);
 
